@@ -1,10 +1,11 @@
 import * as d3 from "d3";
+import { Visited } from "./types";
 
 const res = await fetch("/world.json");
 const data = await res.json();
 
 const visited = await fetch("/visited.json");
-const visitedData = await visited.json();
+const visitedData = (await visited.json()) as Visited;
 
 let width = d3.select("#map").node().getBoundingClientRect().width;
 let height = window.document.documentElement.clientHeight - 5;
@@ -70,7 +71,7 @@ map
   .data(data.features)
   .enter()
   .append("path")
-  .attr("class", (d) => "country_" + d.properties.name.replace(" ", "_"))
+  .attr("class", (d: any) => "country_" + d.properties.name.replace(" ", "_"))
   .attr("d", path)
   .attr("fill", "white")
   .style("stroke", "black")
