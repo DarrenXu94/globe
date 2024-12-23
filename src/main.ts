@@ -37,31 +37,43 @@ import { Visited } from "./types";
     .attr("cy", height / 2)
     .attr("r", initialScale);
 
-  svg
-    .call(
-      d3.drag().on("drag", () => {
-        const rotate = projection.rotate();
-        const k = sensitivity / projection.scale();
-        projection.rotate([
-          rotate[0] + d3.event.dx * k,
-          rotate[1] - d3.event.dy * k,
-        ]);
-        path = d3.geoPath().projection(projection);
-        svg.selectAll("path").attr("d", path);
-      })
-    )
-    .call(
-      d3.zoom().on("zoom", () => {
-        if (d3.event.transform.k > 0.3) {
-          projection.scale(initialScale * d3.event.transform.k);
-          path = d3.geoPath().projection(projection);
-          svg.selectAll("path").attr("d", path);
-          globe.attr("r", projection.scale());
-        } else {
-          d3.event.transform.k = 0.3;
-        }
-      })
-    );
+  function zoomed() {
+    if (d3.event.transform.k > 0.3) {
+      projection.scale(initialScale * d3.event.transform.k);
+      path = d3.geoPath().projection(projection);
+      svg.selectAll("path").attr("d", path);
+      globe.attr("r", projection.scale());
+    } else {
+      d3.event.transform.k = 0.3;
+    }
+  }
+
+  svg.call(
+    d3.drag().on("drag", () => {
+      const rotate = projection.rotate();
+      const k = sensitivity / projection.scale();
+      projection.rotate([
+        rotate[0] + d3.event.dx * k,
+        rotate[1] - d3.event.dy * k,
+      ]);
+      path = d3.geoPath().projection(projection);
+      svg.selectAll("path").attr("d", path);
+    })
+  );
+  // .call(
+  //   d3.zoom().on("zoom", () => {
+  //     if (d3.event.transform.k > 0.3) {
+  //       projection.scale(initialScale * d3.event.transform.k);
+  //       path = d3.geoPath().projection(projection);
+  //       svg.selectAll("path").attr("d", path);
+  //       globe.attr("r", projection.scale());
+  //     } else {
+  //       d3.event.transform.k = 0.3;
+  //     }
+  //   })
+  // );
+
+  d3.select("#wrapper").call(d3.zoom().on("zoom", zoomed));
 
   let map = svg.append("g");
 
