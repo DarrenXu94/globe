@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { Visited } from "./types";
 
-async () => {
+(async () => {
   const res = await fetch("/world.json");
   const data = await res.json();
 
@@ -91,4 +91,4 @@ async () => {
   visitedData.visited.forEach((country) => {
     d3.select(".country_" + country.country).attr("fill", "red");
   });
-};
+})();
