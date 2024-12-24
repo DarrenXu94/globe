@@ -14,6 +14,8 @@ import { Visited } from "./types";
 
   const maxScale = 300; // Define a maximum scale
 
+  let isDragging = false;
+
   const geojson = {
     type: "FeatureCollection",
     features: [
@@ -68,16 +70,25 @@ import { Visited } from "./types";
   }
 
   svg.call(
-    d3.drag().on("drag", () => {
-      const rotate = projection.rotate();
-      const k = sensitivity / projection.scale();
-      projection.rotate([
-        rotate[0] + d3.event.dx * k,
-        rotate[1] - d3.event.dy * k,
-      ]);
-      path = d3.geoPath().projection(projection);
-      svg.selectAll("path").attr("d", path);
-    })
+    d3
+      .drag()
+      .on("start", () => {
+        isDragging = true; // Set dragging flag to true
+      })
+      .on("drag", () => {
+        isDragging = true;
+        const rotate = projection.rotate();
+        const k = sensitivity / projection.scale();
+        projection.rotate([
+          rotate[0] + d3.event.dx * k,
+          rotate[1] - d3.event.dy * k,
+        ]);
+        path = d3.geoPath().projection(projection);
+        svg.selectAll("path").attr("d", path);
+      })
+      .on("end", () => {
+        isDragging = false;
+      })
   );
   // .call(
   //   d3.zoom().on("zoom", () => {
@@ -153,6 +164,9 @@ import { Visited } from "./types";
 
   // Function to rotate to a specific coordinate and dynamically adjust zoom
   function rotateTo(target) {
+    if (isDragging) {
+      return; // Do nothing if dragging is active
+    }
     const currentRotation = projection.rotate(); // Get current rotation
     const currentCoords = [-currentRotation[0], -currentRotation[1]]; // Current longitude and latitude
     const targetRotation = [-target[0], -target[1]]; // Flip longitude and latitude for D3
