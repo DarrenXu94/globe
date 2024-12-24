@@ -12,12 +12,31 @@ import { Visited } from "./types";
   let height = window.document.documentElement.clientHeight - 5;
   const sensitivity = 75;
 
+  const maxScale = 300; // Define a maximum scale
+
+  const geojson = {
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Sphere",
+        },
+      },
+    ],
+  };
+
   let projection = d3
     .geoOrthographic()
-    .scale(250)
+    .fitSize([width - 20, height - 20], geojson)
     .center([0, 0])
     .rotate([0, -30])
     .translate([width / 2, height / 2]);
+
+  // Enforce maximum scale
+  if (projection.scale() > maxScale) {
+    projection.scale(maxScale);
+  }
 
   const initialScale = projection.scale();
   let path = d3.geoPath().projection(projection);
