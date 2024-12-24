@@ -74,6 +74,7 @@ import { Visited } from "./types";
       .drag()
       .on("start", () => {
         isDragging = true; // Set dragging flag to true
+        d3.selectAll("*").interrupt();
       })
       .on("drag", () => {
         isDragging = true;
@@ -131,7 +132,11 @@ import { Visited } from "./types";
   // }, 200);
 
   visitedData.visited.forEach((country) => {
-    d3.select(".country_" + country.country).attr("fill", "red");
+    d3.select(".country_" + country.country)
+      .attr("fill", "red")
+      .on("click", () => {
+        console.log(country);
+      });
   });
 
   // List of target coordinates to rotate to (longitude, latitude)
