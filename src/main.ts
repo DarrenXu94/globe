@@ -103,4 +103,76 @@ import { Visited } from "./types";
   visitedData.visited.forEach((country) => {
     d3.select(".country_" + country.country).attr("fill", "red");
   });
+
+  // List of target coordinates to rotate to (longitude, latitude)
+  const coordinates = [
+    [-74.006, 40.7128], // New York City
+    [2.3522, 48.8566], // Paris
+    [139.6917, 35.6895], // Tokyo
+    [151.2093, -33.8688], // Sydney
+  ];
+
+  // Function to calculate the great-circle distance (Haversine formula)
+  function calculateDistance(coord1, coord2) {
+    const toRadians = (deg) => (deg * Math.PI) / 180;
+    const [lon1, lat1] = coord1;
+    const [lon2, lat2] = coord2;
+
+    const dLat = toRadians(lat2 - lat1);
+    const dLon = toRadians(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRadians(lat1)) *
+        Math.cos(toRadians(lat2)) *
+        Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const earthRadius = 6371; // Earth's radius in kilometers
+    return earthRadius * c; // Distance in kilometers
+  }
+
+  // Function to rotate to a specific coordinate and dynamically adjust zoom
+  function rotateTo(target) {
+    const currentRotation = projection.rotate(); // Get current rotation
+    const currentCoords = [-currentRotation[0], -currentRotation[1]]; // Current longitude and latitude
+    const targetRotation = [-target[0], -target[1]]; // Flip longitude and latitude for D3
+
+    // Calculate distance between current and target coordinates
+    const distance = calculateDistance(currentCoords, target);
+    const maxZoomOutScale = projection.scale() * 0.5; // Maximum zoom-out scale
+    const minZoomOutScale = projection.scale() * 0.8; // Minimum zoom-out scale
+
+    // Scale zoom-out proportionally based on distance (normalize between 0 and 1)
+    const zoomOutScale =
+      minZoomOutScale +
+      Math.min(distance / 20000, 1) * (maxZoomOutScale - minZoomOutScale);
+
+    d3.transition()
+      .duration(2000) // Duration of the rotation and zoom
+      .tween("rotateAndZoom", () => {
+        const interpolateRotation = d3.interpolate(
+          currentRotation,
+          targetRotation
+        );
+        const interpolateScale = d3.interpolate(
+          projection.scale(),
+          zoomOutScale
+        );
+        return function (t) {
+          projection.rotate(interpolateRotation(t));
+          projection.scale(interpolateScale(t < 0.5 ? t * 2 : 2 - t * 2)); // Zoom out and in
+          svg.selectAll("path").attr("d", path);
+          globe.attr("r", projection.scale());
+        };
+      });
+  }
+
+  // Interval to rotate to each coordinate every X seconds
+  let index = 0;
+  const interval = 3000; // 3 seconds
+  setInterval(() => {
+    rotateTo(coordinates[index]);
+    index = (index + 1) % coordinates.length; // Cycle through coordinates
+  }, interval);
 })();
