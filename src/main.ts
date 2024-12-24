@@ -67,8 +67,25 @@ import { Visited } from "./types";
     }
   }
 
-  svg.call(
-    d3.drag().on("drag", () => {
+  // svg.call(
+  //   d3.drag().on("drag", () => {
+  //     const rotate = projection.rotate();
+  //     const k = sensitivity / projection.scale();
+  //     projection.rotate([
+  //       rotate[0] + d3.event.dx * k,
+  //       rotate[1] - d3.event.dy * k,
+  //     ]);
+  //     path = d3.geoPath().projection(projection);
+  //     svg.selectAll("path").attr("d", path);
+  //   })
+  // );
+
+  let isZooming = false;
+
+  const drag = d3.drag().on("drag", function () {
+    if (!isZooming) {
+      // Handle dragging logic
+      // Update positions or any other action based on dragging
       const rotate = projection.rotate();
       const k = sensitivity / projection.scale();
       projection.rotate([
@@ -77,22 +94,24 @@ import { Visited } from "./types";
       ]);
       path = d3.geoPath().projection(projection);
       svg.selectAll("path").attr("d", path);
-    })
-  );
-  // .call(
-  //   d3.zoom().on("zoom", () => {
-  //     if (d3.event.transform.k > 0.3) {
-  //       projection.scale(initialScale * d3.event.transform.k);
-  //       path = d3.geoPath().projection(projection);
-  //       svg.selectAll("path").attr("d", path);
-  //       globe.attr("r", projection.scale());
-  //     } else {
-  //       d3.event.transform.k = 0.3;
-  //     }
-  //   })
-  // );
+    }
+  });
 
-  d3.select("#wrapper").call(d3.zoom().on("zoom", zoomed));
+  d3.select("#wrapper").call(drag);
+
+  d3.select("#wrapper").call(
+    d3
+      .zoom()
+      .on("start", function () {
+        isZooming = true; // Zooming started
+        svg.on(".drag", null); // Disable dragging during zooming by removing the drag event
+      })
+      .on("end", function () {
+        isZooming = false; // Zooming ended
+        svg.call(drag); // Re-enable dragging after zooming
+      })
+      .on("zoom", zoomed)
+  );
 
   let map = svg.append("g");
 
@@ -190,8 +209,8 @@ import { Visited } from "./types";
   // Interval to rotate to each coordinate every X seconds
   let index = 0;
   const interval = 3000; // 3 seconds
-  setInterval(() => {
-    rotateTo(coordinates[index]);
-    index = (index + 1) % coordinates.length; // Cycle through coordinates
-  }, interval);
+  // setInterval(() => {
+  //   rotateTo(coordinates[index]);
+  //   index = (index + 1) % coordinates.length; // Cycle through coordinates
+  // }, interval);
 })();
