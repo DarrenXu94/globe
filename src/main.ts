@@ -51,7 +51,7 @@ import { Visited } from "./types";
 
   let globe = svg
     .append("circle")
-    .attr("fill", "#EEE")
+    .attr("fill", "#4682b4")
     .attr("stroke", "#000")
     .attr("stroke-width", "0.2")
     .attr("cx", width / 2)
