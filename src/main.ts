@@ -16,6 +16,8 @@ import { Visited } from "./types";
 
   let isDragging = false;
 
+  const transitionDuration = 2000;
+
   const geojson = {
     type: "FeatureCollection",
     features: [
@@ -187,7 +189,7 @@ import { Visited } from "./types";
       Math.min(distance / 20000, 1) * (maxZoomOutScale - minZoomOutScale);
 
     d3.transition()
-      .duration(2000) // Duration of the rotation and zoom
+      .duration(transitionDuration) // Duration of the rotation and zoom
       .tween("rotateAndZoom", () => {
         const interpolateRotation = d3.interpolate(
           currentRotation,
@@ -207,10 +209,32 @@ import { Visited } from "./types";
   }
 
   // Interval to rotate to each coordinate every X seconds
-  let index = 0;
-  const interval = 3000; // 3 seconds
-  setInterval(() => {
+  // let index = 0;
+  // const interval = 3000; // 3 seconds
+  // setInterval(() => {
+  //   rotateTo(coordinates[index]);
+  //   index = (index + 1) % coordinates.length; // Cycle through coordinates
+  // }, interval);
+
+  // Rotate to a specific coordinate
+
+  const prevButton = document.getElementById("prev") as HTMLButtonElement;
+  const nextButton = document.getElementById("next") as HTMLButtonElement;
+
+  const handlePrevClick = () => {
+    index = index === 0 ? coordinates.length - 1 : index - 1;
     rotateTo(coordinates[index]);
-    index = (index + 1) % coordinates.length; // Cycle through coordinates
-  }, interval);
+  };
+
+  const handleNextClick = () => {
+    index = (index + 1) % coordinates.length;
+    rotateTo(coordinates[index]);
+  };
+
+  let index = 0;
+  // Add debounced event listeners
+  prevButton.addEventListener("click", handlePrevClick);
+  nextButton.addEventListener("click", handleNextClick);
+
+  rotateTo(coordinates[index]);
 })();
