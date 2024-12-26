@@ -141,6 +141,11 @@ table {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  pointer-events: none;
+}
+
+#controls button {
+  pointer-events: auto;
 }
 
 .arrow {

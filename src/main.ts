@@ -133,20 +133,66 @@ import { Visited } from "./types";
   //   svg.selectAll("path").attr("d", path);
   // }, 200);
 
+  function calculateCenter(coordinates) {
+    // Helper function to calculate the centroid of a single polygon
+    function calculatePolygonCentroid(polygon) {
+      let x = 0,
+        y = 0,
+        totalPoints = 0;
+      polygon.forEach(([lon, lat]) => {
+        x += lon;
+        y += lat;
+        totalPoints++;
+      });
+      return [x / totalPoints, y / totalPoints];
+    }
+
+    // Check if input is a multipolygon or a polygon
+    if (Array.isArray(coordinates[0][0][0])) {
+      // Input is a MultiPolygon
+      let totalX = 0,
+        totalY = 0,
+        totalCount = 0;
+      coordinates.forEach((polygon) => {
+        const [centroidX, centroidY] = calculatePolygonCentroid(polygon[0]);
+        totalX += centroidX;
+        totalY += centroidY;
+        totalCount++;
+      });
+      return [totalX / totalCount, totalY / totalCount];
+    } else {
+      // Input is a Polygon
+      return calculatePolygonCentroid(coordinates[0]);
+    }
+  }
+
   visitedData.visited.forEach((country) => {
     d3.select(".country_" + country.country)
       .attr("fill", "red")
       .on("click", () => {
         console.log(country);
+
+        const findCountry = data.features.find(
+          (feature) => feature.properties.name === country.country
+        );
+        console.log(findCountry);
+
+        console.log(calculateCenter(findCountry.geometry.coordinates));
       });
   });
 
   // List of target coordinates to rotate to (longitude, latitude)
+  // const coordinates = [
+  //   [-74.006, 40.7128], // New York City
+  //   [2.3522, 48.8566], // Paris
+  //   [139.6917, 35.6895], // Tokyo
+  //   [151.2093, -33.8688], // Sydney
+  // ];
+
   const coordinates = [
-    [-74.006, 40.7128], // New York City
-    [2.3522, 48.8566], // Paris
-    [139.6917, 35.6895], // Tokyo
-    [151.2093, -33.8688], // Sydney
+    [-19.265977400000004, 65.27802869999998], // Iceland
+    [-152.05653174626298, 38.61652105821612], // USA
+    [139.9463476611082, -32.842718431985276], // Australia
   ];
 
   // Function to calculate the great-circle distance (Haversine formula)
