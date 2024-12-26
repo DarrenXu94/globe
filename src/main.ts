@@ -134,39 +134,6 @@ import { calculateGeographicCentroid } from "./calculate";
   //   svg.selectAll("path").attr("d", path);
   // }, 200);
 
-  function calculateCenter(coordinates) {
-    // Helper function to calculate the centroid of a single polygon
-    function calculatePolygonCentroid(polygon) {
-      let x = 0,
-        y = 0,
-        totalPoints = 0;
-      polygon.forEach(([lon, lat]) => {
-        x += lon;
-        y += lat;
-        totalPoints++;
-      });
-      return [x / totalPoints, y / totalPoints];
-    }
-
-    // Check if input is a multipolygon or a polygon
-    if (Array.isArray(coordinates[0][0][0])) {
-      // Input is a MultiPolygon
-      let totalX = 0,
-        totalY = 0,
-        totalCount = 0;
-      coordinates.forEach((polygon) => {
-        const [centroidX, centroidY] = calculatePolygonCentroid(polygon[0]);
-        totalX += centroidX;
-        totalY += centroidY;
-        totalCount++;
-      });
-      return [totalX / totalCount, totalY / totalCount];
-    } else {
-      // Input is a Polygon
-      return calculatePolygonCentroid(coordinates[0]);
-    }
-  }
-
   visitedData.visited.forEach((country) => {
     d3.select(".country_" + country.country)
       .attr("fill", "red")
@@ -218,11 +185,16 @@ import { calculateGeographicCentroid } from "./calculate";
     return earthRadius * c; // Distance in kilometers
   }
 
+  let isTransitioning = false; // Flag to track active transitions
+
   // Function to rotate to a specific coordinate and dynamically adjust zoom
   function rotateTo(target) {
-    if (isDragging) {
+    if (isDragging || isTransitioning) {
       return; // Do nothing if dragging is active
     }
+
+    isTransitioning = true; // Mark transition as active
+
     const currentRotation = projection.rotate(); // Get current rotation
     const currentCoords = [-currentRotation[0], -currentRotation[1]]; // Current longitude and latitude
     const targetRotation = [-target[0], -target[1]]; // Flip longitude and latitude for D3
@@ -254,6 +226,12 @@ import { calculateGeographicCentroid } from "./calculate";
           svg.selectAll("path").attr("d", path);
           globe.attr("r", projection.scale());
         };
+      })
+      .on("end", () => {
+        isTransitioning = false; // Reset flag when transition ends
+      })
+      .on("interrupt", () => {
+        isTransitioning = false; // Reset flag if transition is interrupted
       });
   }
 
