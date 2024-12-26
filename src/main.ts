@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import { Visited } from "./types";
+import { calculateGeographicCentroid } from "./calculate";
 
 (async () => {
   const res = await fetch("/world.json");
@@ -177,7 +178,9 @@ import { Visited } from "./types";
         );
         console.log(findCountry);
 
-        console.log(calculateCenter(findCountry.geometry.coordinates));
+        console.log(
+          calculateGeographicCentroid(findCountry.geometry.coordinates)
+        );
       });
   });
 
@@ -191,7 +194,7 @@ import { Visited } from "./types";
 
   const coordinates = [
     [-19.265977400000004, 65.27802869999998], // Iceland
-    [-152.05653174626298, 38.61652105821612], // USA
+    [-100.2736408005889, 43.070868452395025], // USA
     [139.9463476611082, -32.842718431985276], // Australia
   ];
 
