@@ -142,6 +142,7 @@ table {
   justify-content: space-between;
   align-items: center;
   pointer-events: none;
+  max-width: 100em;
 }
 
 #controls button {
@@ -312,4 +313,8 @@ body {
 }
 #country {
   color: white;
+}
+
+.visited {
+  opacity: 1 !important;
 }

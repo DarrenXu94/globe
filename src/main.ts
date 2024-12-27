@@ -126,21 +126,10 @@ import { generateCoordinates } from "./generateCoordinates";
   //   svg.selectAll("path").attr("d", path);
   // }, 200);
 
-  visitedData.visited.forEach((country) => {
-    d3.select(".country_" + country.country).style("opacity", 1);
-    // .on("click", () => {
-    //   console.log(country);
+  // visitedData.visited.forEach((country) => {
+  //   d3.select(".country_" + country.country).style("opacity", 1);
 
-    //   const findCountry = data.features.find(
-    //     (feature) => feature.properties.name === country.country
-    //   );
-    //   console.log(findCountry);
-
-    //   console.log(
-    //     calculateGeographicCentroid(findCountry.geometry.coordinates)
-    //   );
-    // });
-  });
+  // });
 
   // Function to calculate the great-circle distance (Haversine formula)
   function calculateDistance(coord1, coord2) {
@@ -167,6 +156,14 @@ import { generateCoordinates } from "./generateCoordinates";
     title.textContent = text;
   }
 
+  function changeFillColor(country) {
+    // Clear previous visited class
+    d3.selectAll(".visited").classed("visited", false);
+
+    // Apply class
+    d3.select(".country_" + country).classed("visited", true);
+  }
+
   let isTransitioning = false; // Flag to track active transitions
 
   // Function to rotate to a specific coordinate and dynamically adjust zoom
@@ -177,7 +174,10 @@ import { generateCoordinates } from "./generateCoordinates";
     if (isDragging || isTransitioning) {
       return; // Do nothing if dragging is active
     }
+
     updateTitle(target.country);
+
+    changeFillColor(target.country);
 
     isTransitioning = true; // Mark transition as active
 
