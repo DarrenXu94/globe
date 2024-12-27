@@ -1,4 +1,4 @@
-interface VisitedCountry {
+export interface VisitedCountry {
   country: string;
 }
 

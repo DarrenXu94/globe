@@ -2,6 +2,8 @@ import * as d3 from "d3";
 import { Visited } from "./types";
 import { calculateGeographicCentroid } from "./calculate";
 
+import { generateCoordinates } from "./generateCoordinates";
+
 (async () => {
   const res = await fetch("/world.json");
   const data = await res.json();
@@ -18,6 +20,8 @@ import { calculateGeographicCentroid } from "./calculate";
   let isDragging = false;
 
   const transitionDuration = 2000;
+
+  const coordinates = generateCoordinates(data, visitedData);
 
   const geojson = {
     type: "FeatureCollection",
@@ -94,18 +98,6 @@ import { calculateGeographicCentroid } from "./calculate";
         isDragging = false;
       })
   );
-  // .call(
-  //   d3.zoom().on("zoom", () => {
-  //     if (d3.event.transform.k > 0.3) {
-  //       projection.scale(initialScale * d3.event.transform.k);
-  //       path = d3.geoPath().projection(projection);
-  //       svg.selectAll("path").attr("d", path);
-  //       globe.attr("r", projection.scale());
-  //     } else {
-  //       d3.event.transform.k = 0.3;
-  //     }
-  //   })
-  // );
 
   d3.select("#wrapper").call(d3.zoom().on("zoom", zoomed));
 
@@ -123,7 +115,7 @@ import { calculateGeographicCentroid } from "./calculate";
     .attr("fill", "white")
     .style("stroke", "black")
     .style("stroke-width", 0.3)
-    .style("opacity", 0.8);
+    .style("opacity", 0.5);
 
   //Optional rotate
   // d3.timer(function (elapsed) {
@@ -135,35 +127,20 @@ import { calculateGeographicCentroid } from "./calculate";
   // }, 200);
 
   visitedData.visited.forEach((country) => {
-    d3.select(".country_" + country.country)
-      .attr("fill", "red")
-      .on("click", () => {
-        console.log(country);
+    d3.select(".country_" + country.country).style("opacity", 1);
+    // .on("click", () => {
+    //   console.log(country);
 
-        const findCountry = data.features.find(
-          (feature) => feature.properties.name === country.country
-        );
-        console.log(findCountry);
+    //   const findCountry = data.features.find(
+    //     (feature) => feature.properties.name === country.country
+    //   );
+    //   console.log(findCountry);
 
-        console.log(
-          calculateGeographicCentroid(findCountry.geometry.coordinates)
-        );
-      });
+    //   console.log(
+    //     calculateGeographicCentroid(findCountry.geometry.coordinates)
+    //   );
+    // });
   });
-
-  // List of target coordinates to rotate to (longitude, latitude)
-  // const coordinates = [
-  //   [-74.006, 40.7128], // New York City
-  //   [2.3522, 48.8566], // Paris
-  //   [139.6917, 35.6895], // Tokyo
-  //   [151.2093, -33.8688], // Sydney
-  // ];
-
-  const coordinates = [
-    [-19.265977400000004, 65.27802869999998], // Iceland
-    [-100.2736408005889, 43.070868452395025], // USA
-    [139.9463476611082, -32.842718431985276], // Australia
-  ];
 
   // Function to calculate the great-circle distance (Haversine formula)
   function calculateDistance(coord1, coord2) {
@@ -185,22 +162,32 @@ import { calculateGeographicCentroid } from "./calculate";
     return earthRadius * c; // Distance in kilometers
   }
 
+  function updateTitle(text) {
+    const title = document.getElementById("country") as HTMLParagraphElement;
+    title.textContent = text;
+  }
+
   let isTransitioning = false; // Flag to track active transitions
 
   // Function to rotate to a specific coordinate and dynamically adjust zoom
-  function rotateTo(target) {
+  function rotateTo(target: {
+    country: string;
+    coordinates: [number, number];
+  }) {
     if (isDragging || isTransitioning) {
       return; // Do nothing if dragging is active
     }
+    updateTitle(target.country);
 
     isTransitioning = true; // Mark transition as active
 
     const currentRotation = projection.rotate(); // Get current rotation
     const currentCoords = [-currentRotation[0], -currentRotation[1]]; // Current longitude and latitude
-    const targetRotation = [-target[0], -target[1]]; // Flip longitude and latitude for D3
+    // const targetRotation = [-target[0], -target[1]]; // Flip longitude and latitude for D3
+    const targetRotation = [-target.coordinates[0], -target.coordinates[1]]; // Flip longitude and latitude for D3
 
     // Calculate distance between current and target coordinates
-    const distance = calculateDistance(currentCoords, target);
+    const distance = calculateDistance(currentCoords, target.coordinates);
     const maxZoomOutScale = projection.scale() * 0.5; // Maximum zoom-out scale
     const minZoomOutScale = projection.scale() * 0.8; // Minimum zoom-out scale
 
@@ -234,14 +221,6 @@ import { calculateGeographicCentroid } from "./calculate";
         isTransitioning = false; // Reset flag if transition is interrupted
       });
   }
-
-  // Interval to rotate to each coordinate every X seconds
-  // let index = 0;
-  // const interval = 3000; // 3 seconds
-  // setInterval(() => {
-  //   rotateTo(coordinates[index]);
-  //   index = (index + 1) % coordinates.length; // Cycle through coordinates
-  // }, interval);
 
   // Rotate to a specific coordinate
 

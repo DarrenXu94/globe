@@ -3,7 +3,7 @@
  * @param coordinates
  * @returns
  */
-export function calculateGeographicCentroid(coordinates) {
+export function calculateGeographicCentroid(coordinates): [number, number] {
   const EARTH_RADIUS = 6371; // Radius of the Earth in kilometers
 
   // Helper function to calculate the signed area of a polygon
@@ -19,7 +19,7 @@ export function calculateGeographicCentroid(coordinates) {
   }
 
   // Helper function to calculate the centroid of a single polygon
-  function calculatePolygonCentroid(polygon) {
+  function calculatePolygonCentroid(polygon): [number, number] {
     let cx = 0,
       cy = 0,
       cz = 0;

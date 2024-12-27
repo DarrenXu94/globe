@@ -302,3 +302,14 @@ body {
   position: relative;
   z-index: 1;
 }
+#title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 2em;
+  text-align: center;
+}
+#country {
+  color: white;
+}
