@@ -206,14 +206,6 @@ table {
   border-color: transparent #0056b3 transparent #0056b3;
 }
 
-@media only screen and (max-width: 50em) {
-  #controls {
-    align-items: flex-end;
-    height: auto;
-    top: 90%;
-  }
-}
-
 body {
   background-color: #000;
 
@@ -317,4 +309,102 @@ body {
 
 .visited {
   opacity: 1 !important;
+}
+
+#trigger-wrapper {
+  position: absolute;
+  bottom: 10%;
+  /* top: 90%; */
+  /* bottom: 30px; */
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+#trigger-wrapper button {
+  pointer-events: auto;
+}
+
+dialog {
+  /* max-width: 300px; */
+  padding: 1.5em;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 0 0.25em 0.1em hsl(0 0% 0% / 10%);
+  border-radius: 0.5em;
+  height: 50vh;
+  width: 50vw;
+}
+
+dialog::backdrop {
+  --modal-backdrop-bg-color: hsl(280deg 50% 5% / 50%);
+  --modal-backdrop-bg-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'><circle cx='10' cy='10' r='1' /></svg>");
+  background: var(--modal-backdrop-bg-color) var(--modal-backdrop-bg-image);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-btn {
+  position: relative; /* Adjust based on parent container */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px; /* Size of the button */
+  height: 32px;
+  background-color: #007bff;
+  border: none;
+  border-radius: 50%; /* Makes it circular */
+  cursor: pointer;
+  font-size: 20px; /* Size of the "×" symbol */
+  font-weight: bold;
+  color: white; /* Adjust for your theme */
+  transition: background-color 0.3s, transform 0.2s;
+  line-height: inherit;
+}
+
+.close-btn:hover {
+  /* background-color: rgba(0, 0, 0, 0.1); Adds a hover effect */
+  transform: scale(1.1); /* Slight zoom effect */
+}
+
+.close-btn:active {
+  transform: scale(0.95); /* Pressed effect */
+}
+
+.close-btn:focus {
+  outline: 2px solid #007bff; /* Optional focus style */
+  outline-offset: 2px;
+}
+
+@media only screen and (max-width: 50em) {
+  #controls {
+    align-items: flex-end;
+    height: auto;
+    top: 90%;
+  }
+
+  #trigger-wrapper {
+    bottom: 30px;
+  }
+
+  dialog {
+    height: 100vh;
+    width: 100vw;
+  }
+}
+
+#modal-content {
+  width: 100%;
+  position: relative;
+}
+
+#modal-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

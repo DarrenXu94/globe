@@ -207,6 +207,7 @@ import { generateCoordinates } from "./generateCoordinates";
           projection.scale(),
           zoomOutScale
         );
+
         return function (t) {
           projection.rotate(interpolateRotation(t));
           projection.scale(interpolateScale(t < 0.5 ? t * 2 : 2 - t * 2)); // Zoom out and in
@@ -241,6 +242,64 @@ import { generateCoordinates } from "./generateCoordinates";
   // Add debounced event listeners
   prevButton.addEventListener("click", handlePrevClick);
   nextButton.addEventListener("click", handleNextClick);
+
+  const seeMore = document.getElementById("see-more") as HTMLButtonElement;
+
+  const closeBtn = document.getElementById("close") as HTMLButtonElement;
+
+  closeBtn.addEventListener("click", () => {
+    const modal = document.querySelector("#modal") as HTMLDialogElement;
+
+    if (!modal) return;
+    modal.close();
+  });
+
+  seeMore.addEventListener("click", () => {
+    console.log("clicked", coordinates[index].country);
+
+    const modal = document.querySelector("#modal") as HTMLDialogElement;
+
+    if (!modal) return;
+    modal.showModal();
+
+    // Update modal content
+
+    // const country = coordinates[index].country;
+
+    const country = visitedData.visited.find((e) => {
+      return e.country === coordinates[index].country;
+    });
+
+    // const countryData = data.features.find(
+    //   (feature) => feature.properties.name === country
+    // );
+
+    // if (!countryData) return;
+
+    if (!country) return;
+
+    const modalContent = document.getElementById("modal-content");
+
+    if (!modalContent) return;
+
+    const countryName = document.createElement("h2");
+
+    countryName.textContent = country.country;
+
+    modalContent.appendChild(countryName);
+
+    // const countryDetails = document.createElement("p");
+
+    // countryDetails.textContent = countryData.properties.description;
+
+    // modalContent.appendChild(countryDetails);
+
+    const countryImage = document.createElement("img");
+
+    countryImage.src = "/images/" + country.gallery[0].photo;
+
+    modalContent.appendChild(countryImage);
+  });
 
   rotateTo(coordinates[index]);
 })();

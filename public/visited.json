@@ -1,7 +1,10 @@
 {
   "visited": [
 
-    {"country": "USA"},
+    {"country": "USA", "gallery": [{
+      "city": "Los Angeles",
+      "photo": "LA.jpg"
+    }]},
     {"country": "Australia"},
     {"country": "Iceland"}
 
