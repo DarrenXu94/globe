@@ -401,10 +401,35 @@ dialog::backdrop {
 #modal-content {
   width: 100%;
   position: relative;
+  flex: 1;
 }
 
 #modal-content img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* #modal-footer {
+  position: absolute;
+  bottom: 20px;
+} */
+
+#modal:modal {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: space-between;
+  height: 100%; */
+}
+
+#modal-footer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.modal-controls {
+  display: flex;
+  justify-content: space-between;
 }

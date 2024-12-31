@@ -21,6 +21,8 @@ import { generateCoordinates } from "./generateCoordinates";
 
   const transitionDuration = 2000;
 
+  let galleryIndex = 0;
+
   const coordinates = generateCoordinates(data, visitedData);
 
   const geojson = {
@@ -294,11 +296,61 @@ import { generateCoordinates } from "./generateCoordinates";
 
     // modalContent.appendChild(countryDetails);
 
+    if (!country.gallery) {
+      // Empty modal content
+
+      modalContent.innerHTML = "";
+
+      return;
+    }
+
+    galleryIndex = 0;
+
     const countryImage = document.createElement("img");
 
-    countryImage.src = "/images/" + country.gallery[0].photo;
+    countryImage.src = "/images/" + country.gallery[galleryIndex].photo;
 
     modalContent.appendChild(countryImage);
+  });
+
+  const prevModal = document.getElementById("prev-modal") as HTMLButtonElement;
+  const nextModal = document.getElementById("next-modal") as HTMLButtonElement;
+
+  prevModal.addEventListener("click", () => {
+    galleryIndex = galleryIndex === 0 ? 0 : galleryIndex - 1;
+
+    const modalContent = document.getElementById("modal-content");
+
+    if (!modalContent) return;
+
+    const countryImage = document.querySelector("#modal-content img");
+
+    if (!countryImage) return;
+
+    countryImage.setAttribute(
+      "src",
+      "/images/" + visitedData.visited[index].gallery[galleryIndex].photo
+    );
+  });
+
+  nextModal.addEventListener("click", () => {
+    galleryIndex =
+      galleryIndex === visitedData.visited[index].gallery.length - 1
+        ? visitedData.visited[index].gallery.length - 1
+        : galleryIndex + 1;
+
+    const modalContent = document.getElementById("modal-content");
+
+    if (!modalContent) return;
+
+    const countryImage = document.querySelector("#modal-content img");
+
+    if (!countryImage) return;
+
+    countryImage.setAttribute(
+      "src",
+      "/images/" + visitedData.visited[index].gallery[galleryIndex].photo
+    );
   });
 
   rotateTo(coordinates[index]);

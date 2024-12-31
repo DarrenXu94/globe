@@ -1,12 +1,19 @@
 {
   "visited": [
-
-    {"country": "USA", "gallery": [{
-      "city": "Los Angeles",
-      "photo": "LA.jpg"
-    }]},
-    {"country": "Australia"},
-    {"country": "Iceland"}
-
+    {
+      "country": "USA",
+      "gallery": [
+        {
+          "city": "Los Angeles",
+          "photo": "LA.jpg"
+        },
+        {
+          "city": "San Francisco",
+          "photo": "SF.jpg"
+        }
+      ]
+    },
+    { "country": "Australia" },
+    { "country": "Iceland" }
   ]
 }
